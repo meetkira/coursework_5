@@ -1,9 +1,11 @@
 import os
+from typing import Dict
 
 from flask import Flask, render_template, request, redirect, url_for
 
 from characters import characters
 from equipment import EquipmentData
+from hero import Player, Hero, Enemy
 from utils import load_equipment
 
 app = Flask(__name__)
@@ -13,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 EQUIPMENT: EquipmentData = load_equipment()
-
+heroes: Dict[str, Hero] = dict()
 
 def render_choose_character(**kwargs) -> str:
     return render_template(
@@ -38,6 +40,13 @@ def choose_hero():
     # TODO на POST отправляем форму и делаем редирект на эндпоинт choose enemy
     if request.method == "GET":
         return render_choose_character(header="Выберите героя", next_button="Выбрать врага")
+    if request.method == "POST":
+        heroes["player"] = Player(
+            name=request.form["name"],
+            class_=characters[request.form['unit_class']],
+            weapon=EQUIPMENT.get_weapon(request.form["weapon"]),
+            armor=EQUIPMENT.get_armor(request.form["armor"]),
+        )
     return redirect(url_for("choose_enemy"))
 
 
@@ -48,14 +57,23 @@ def choose_enemy():
     # TODO а на POST отправляем форму и делаем редирект на начало битвы
     if request.method == "GET":
         return render_choose_character(header="Выберите врага", next_button="Начать сражение")
-    return "not found"
+    if request.method == "POST":
+        heroes["enemy"] = Enemy(
+            name=request.form["name"],
+            class_=characters[request.form['unit_class']],
+            weapon=EQUIPMENT.get_weapon(request.form["weapon"]),
+            armor=EQUIPMENT.get_armor(request.form["armor"]),
+        )
+    return redirect(url_for("start_fight"))
 
 
 @app.route("/fight/")
 def start_fight():
     # TODO выполняем функцию start_game экземпляра класса арена и передаем ему необходимые аргументы
     # TODO рендерим экран боя (шаблон fight.html)
-    pass
+    if "player" in heroes and "enemy" in heroes:
+        return render_template("fight.html", heroes=heroes, result="Fight!")
+    return redirect(url_for("menu_page"))
 
 
 @app.route("/fight/hit")
