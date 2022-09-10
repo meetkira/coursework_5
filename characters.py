@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Dict, Type
 
 from skills import Skill, fury_punch, hard_shot
 
@@ -31,3 +32,9 @@ class Thief(Character):
     stamina = 1.2
     armor = 1.0
     skill = hard_shot
+
+
+characters: Dict[str, Type[Character]] = {
+    Warrior.name: Warrior,
+    Thief.name: Thief,
+}
