@@ -34,7 +34,7 @@ class Thief(Character):
     skill = hard_shot
 
 
-characters: Dict[str, Type[Character]] = {
+characters_: Dict[str, Type[Character]] = {
     Warrior.name: Warrior,
     Thief.name: Thief,
 }

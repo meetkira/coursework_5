@@ -4,7 +4,7 @@ from typing import Dict
 
 from flask import Flask, render_template, request, redirect, url_for
 
-from characters import characters
+from characters import characters_
 from controller import Game
 from equipment import EquipmentData
 from hero import Player, Hero, Enemy
@@ -35,7 +35,7 @@ def render_choose_character(**kwargs) -> str:
     return render_template(
         "hero_choosing.html",
         result={
-            "classes": characters.keys(),
+            "classes": characters_.keys(),
             "weapons": EQUIPMENT.weapon_names,
             "armors": EQUIPMENT.armor_names,
             **kwargs,
@@ -59,7 +59,7 @@ def choose_hero():
     if request.method == "POST":
         heroes["player"] = Player(
             name=request.form["name"],
-            class_=characters[request.form['unit_class']],
+            class_=characters_[request.form['unit_class']],
             weapon=EQUIPMENT.get_weapon(request.form["weapon"]),
             armor=EQUIPMENT.get_armor(request.form["armor"]),
         )
@@ -73,7 +73,7 @@ def choose_enemy():
     if request.method == "POST":
         heroes["enemy"] = Enemy(
             name=request.form["name"],
-            class_=characters[request.form['unit_class']],
+            class_=characters_[request.form['unit_class']],
             weapon=EQUIPMENT.get_weapon(request.form["weapon"]),
             armor=EQUIPMENT.get_armor(request.form["armor"]),
         )
